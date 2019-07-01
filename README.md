@@ -1,11 +1,11 @@
 # DNSSEC Key Signing Suite Documentation
 
 Copyright (c) 2019 NLnet Labs  
-Released under Creative Commons CC 4.0 BY-SA (see ```LICENSE```)
+Released under Creative Commons CC 4.0 BY-SA (see [```LICENSE```](LICENSE))
 
 ### Funding Acknowledgement
 
-Work on the DNSSEC Key Signing Suite was supported by a grant from the European Commission's managed by the NLnet Foundation ([NGI0 PET project](https://nlnet.nl/PET/)).
+Work on the DNSSEC Key Signing Suite was supported by a grant from the European Commission managed by the NLnet Foundation ([NGI0 PET project](https://nlnet.nl/PET/)).
 
 ## Preamble
 
