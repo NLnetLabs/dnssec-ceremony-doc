@@ -144,12 +144,25 @@ Explanation: if ZSKs are generated externally (on the DNSSEC signer system), the
 ***TZ2.2*** *- transport model for ZSKs generated during the ceremony.*  
 Explanation: if ZSKs are generated during the ceremony, then they are most likely generated using the HSM(s). In this case, the ZSKs must be transported securely to the signer system(s). The most compatible way to do this is to set up a (software) HSM on the signer system, and to use a standards-based approach to export the ZSKs securely from the HSM and then to import them into the local (software) HSM on the signer system. HSMs generally use the PKCS #11 standard for access and can wrap keys in a PKCS #8 structure. The toolset provided with the DNSSEC Key Signing Suite project supports this model.
 
+***TZ3*** *- choose a key rollover model.*  
+Explanation: there are different key rollover approaches for ZSKs (for an exhaustive description see [[3]](https://tools.ietf.org/html/rfc6781#section-4.1.1)). Unless there are specific reasons to choose a different model, we recommend using the *ZSK pre-publish scheme* with gradual signature replacement. All of the examples in the DNSSEC Key Signing Suite documentation and all of the tools provided assume the *ZSK pre-publish scheme* is used.
+
 #### KSK Generation, Signing and Rollover Ceremony
 
+***TK1*** *- choose a key rollover model.*  
+Explanation: there are different key rollover approaches for KSKs (for an exhaustive description see [[3]](https://tools.ietf.org/html/rfc6781#section-4.1.2). Unless there are specific reasons to choose a different model, we recommend using the *KSK double DS scheme*, in which the ```DNSKEY``` set is signed with only one KSK and two ```DS``` records are published in the parent zone during the rollover. The advantage of this approach is that it reduces the size of the ```DNSKEY``` RRset during the rollover. All of the examples in the DNSSEC Key Signing Suite documentation and all of the tools provided assume the *KSK double DS scheme* is used.
+
+***TK2*** *- decide whether KSK and ZSK rollovers may overlap.*  
+Explanation: depending on what DNSSEC algorithm is used, allowing KSK and ZSK rollovers to overlap may lead to very large DNS responses to ```DNSKEY``` queries. This in turn may lead to response packet fragmentation, which is known to cause DNS resolution problems. The requirements on processes vary between environments, so it may not be possible to always separate rollovers, but if you do use RSA as signing algorithm, we recommend that you strongly consider not allowing KSK and ZSK rollovers to overlap.
+
 ## Key Ceremony Design and Implementation Building Blocks
+
+
 
 ## References
 
 [1] IANA, "DNSSEC Practice Statement for the Root Zone KSK Operator", [<https://www.iana.org/dnssec/dps/ksk-operator/ksk-dps.txt>](https://www.iana.org/dnssec/dps/ksk-operator/ksk-dps.txt)
 
 [2] Jaromir Talomir, "Offline KSK with Knot DNS 2.8", DNS-OARC 30, Bangkok, Thailand, [<https://indico.dns-oarc.net/event/31/contributions/689/attachments/670/1100/KNOT-offline.pdf>](https://indico.dns-oarc.net/event/31/contributions/689/attachments/670/1100/KNOT-offline.pdf)
+
+[3] Olaf Kolkman, Matthijs Mekking and Miek Gieben, "RFC 6781 - DNSSEC Operational Practices, Version 2", IETF, [<https://tools.ietf.org/html/rfc6781>](https://tools.ietf.org/html/rfc6781)
