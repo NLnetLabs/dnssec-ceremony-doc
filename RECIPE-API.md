@@ -404,6 +404,7 @@ The `exportKeypair` action tells the software in the "bunker" to export the spec
 	"cooked":
 	{
 		"exportSuccess": BOOLEAN,
+		
 		"keyBlob": STRING
 	}
 }
