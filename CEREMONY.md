@@ -1,7 +1,7 @@
 # DNSSEC Key Signing Suite Documentation
 ## Key Signing Ceremonies: Requirements, Options and Implementation
 
-Copyright (c) 2019 NLnet Labs  
+Copyright (c) 2019-2020 NLnet Labs  
 Released under Creative Commons CC 4.0 BY-SA (see [```LICENSE```](LICENSE))
 
 ### Funding Acknowledgement
@@ -46,7 +46,7 @@ In order to carry out the technical operations process, you should take the foll
 Explanation: this will help the staff troubleshoot any problems that may occur during the process, and also allows them to partially fulfil the role of community or stakeholder witnesses in case these are not part of the ceremony.
 
 ***OP2*** *- technical staff must be trained to operate the Hardware Security Module(s) used for storing and processing key material.*  
-Explanation: we assume that in most cases where key material is stored offline that one or more HSMs will be used (see the requirements on the technical process further down). HSMs are devices that are not frequently encountered by system administrators and are typically difficult to operate correctly. Add to this that incorrect operation of an HSM may to it zero-ing out key material makes it important that all operators are properly trained.
+Explanation: we assume that in most cases where key material is stored offline that one or more HSMs will be used (see the requirements on the technical process further down). HSMs are devices that are not frequently encountered by system administrators and are typically difficult to operate correctly. Add to this that incorrect operation of an HSM may lead to it zeroing out key material, makes it important that all operators are properly trained.
 
 ***OP3*** *- staff must be available for up to a day for each ceremony.*  
 Explanation: depending on where the ceremony physically takes place, staff may need to travel to/from this location. In addition to this, if public scrutiny is part of the process, time needs to be allowed for witnesses to arrive at the location and to prepare for the ceremony.
@@ -74,7 +74,15 @@ Explanation: for the continuity of your key ceremony process, it is important th
 Explanation: in the case of stakeholder representatives, we expect there to be a process in which these representatives are appointed by the respective stakeholder(s). We strongly recommend that this process is put on paper, or - if applicable - made part of the contract with stakeholders.
 
 ***WS3.2*** *- define how community representatives are selected for public scrutiny duty.*  
-Explanation: in the case of community representatives we expect there to be some sort of election process in which representatives are chosen by a community. Selection criteria differ between communities so are considered out-of-scope for this document. We recommend establishing community bylaws that at a minimum establish: a) how representatives are selected, b) under what conditions they serve, c) how long their term of service is and d) how many subsequent terms they may serve. We also strongly recommend making clear that while serving as community representative is voluntary, it does come with responsibilities to attend ceremonies.
+Explanation: in the case of community representatives we expect there to be some sort of election process in which representatives are chosen by a community. Selection criteria differ between communities so are considered out-of-scope for this document. We recommend establishing community bylaws that at a minimum establish: 
+
+1. how potential representatives are nominated for the role;
+2. how representatives are selected;
+3. under what conditions they serve;
+4. how long their term of service is;
+5. how many subsequent terms they may serve. 
+
+We also strongly recommend making clear that while serving as community representative is voluntary, it does come with responsibilities to attend ceremonies.
 
 ***WS4*** *- define a quorum for the number of witnesses and an escalation procedure.*  
 Explanation: it is likely that not all of the selected witnesses can attend every ceremony. We therefore recommend setting a required minimum number of witnesses that is lower than the actual list of current witnesses. We also strongly recommend setting up a well-documented escalation procedure that can be followed in case it is not possible to gather a quorum, but a key ceremony must take place to guarantee the continuity of a domain. An escalation procedure could, for example, temporarily delegate the responsibility to witness a key ceremony to your board of directors.
@@ -83,7 +91,7 @@ Explanation: it is likely that not all of the selected witnesses can attend ever
 Explanation: your witnesses need to understand what they are witnessing. While it may be infeasible to explain DNSSEC and cryptography to them in detail, they should at least know what materials they are supposed to inspect and how they can check these materials. For more information on what materials should be output, see the requirements and recommendations for the technical process below.
 
 ***WS6*** *- publish information about your public scrutiny process and the people involved.*  
-Explanation: an important reason to have public scrutiny is accountability. It is therefore important to show publicly what process you apply and who your witnesses are. In case your witnesses come from stakeholders, you need to discuss with them what information will be disclosed about witnesses. In case you work with community representatives, the trust is vested in the fact that these people are selected by and known to the community. Therefore, the names and contact details for community representatives must be accessible to the community they represent.
+Explanation: an important reason to have public scrutiny is accountability. It is therefore important to show publicly what process you apply and who your witnesses are. In case your witnesses come from stakeholders, you need to discuss with them what information will be disclosed about witnesses. In case you work with community representatives, the trust is vested in the fact that these people are selected by and known to the community. Therefore, the names and contact details for community representatives must be accessible to the community they represent. A well-known location on your website is, for example, a good location to publish this information.
 
 ### Technical process
 
@@ -94,24 +102,26 @@ As we will discuss below for the design and implementation, we foresee two types
 ***TG1*** *- select Hardware Security Modules(s) to use.*  
 Explanation: to protect key material, many operators of high-value domains use one or more Hardware Security Modules. While it is out-of-scope to provide an exhaustive set of criteria for HSM selection, we provide a list of common considerations to take into account:
 
- * Do you need a "real" HSM (hardware), or does a software solution, such as SoftHSM, suffice?
- * If you use a physical HSM, will you use a single vendor, or will you use HSMs from multiple vendors? (N.B.: using HSMs from multiple vendors potentially makes key management very difficult, so unless there is a good reason to do this, we strongly recommend against it)
+ * Do you need a "real" HSM (hardware), or does a software solution, such as SoftHSM [[4]](https://github.com/opendnssec/SoftHSMv2), suffice?
+ * If you use a physical HSM, will you use a single vendor, or will you use HSMs from multiple vendors? (*N.B.: using HSMs from multiple vendors potentially makes key management very difficult, so unless there is a good reason to do this, we strongly recommend against it*)
  * How many HSMs will you use and what provisions do they have to securely synchronise key material? (many HSM vendors provide a means to share sensitive material between different instances, consult the documentation of the HSM to find out how)
  * How will you retire and replace HSMs over time?
+ * How will you deal with the catastrophic failure of an HSM?
+ * Do you intend to back up key material stored in HSMs, and if so, what provisions does your selected HSM model provide for this purpose?
  * Unless you manage thousands of domains, your HSM probably does not have to be very fast (this may save cost and make selection easier).
- * Does your HSM support your current and future DNSSEC signing algorithms? (pay particular care in case you have plans to switch to newer elliptic curve algorithms such as Ed25519 or Ed448 in the future)
+ * Does your HSM support your current and future DNSSEC signing algorithms? (pay particular care in case you have plans to switch to newer elliptic curve algorithms such as `Ed25519` or `Ed448` in the future)
 
 ***TG2*** *- select your DNSSEC signing algorithm.*  
-Explanation: the DNSSEC signing algorithm influences the size of DNS responses (```DNSKEY``` set and size of ```RRSIG```). Ideally, at any stage during operations DNS responses should fit within the Maximum Transmission Unit (MTU). This constraint is strongly influenced by the selected signing algorithm. For newly signed zones, we strongly recommend using an elliptic curve signing algorithm, for maximum compatibility and a good tradeoff between speed, size and security we currently recommend using ECDSA P-256 with SHA256 (algorithm 13). In case you are instituting a key ceremony for an existing zone that is signed using RSA keys, we strongly recommend paying extra attention to time schedules (see the Design and Implementation section below).
+Explanation: the DNSSEC signing algorithm influences the size of DNS responses (```DNSKEY``` set and size of ```RRSIG```). Ideally, at any stage during operations DNS responses should fit within the Maximum Transmission Unit (MTU). This constraint is strongly influenced by the selected signing algorithm. For newly signed zones, we strongly recommend using an elliptic curve signing algorithm, for maximum compatibility and a good tradeoff between speed, size and security we currently recommend using ECDSA P-256 with SHA256 (algorithm 13). In case you are instituting a key ceremony for an existing zone that is signed using RSA keys, we strongly recommend paying extra attention to time schedules (see the Design and Implementation section below). We also recommend consulting current guidance on DNSSEC algorithms provided by the IETF [[5]](https://tools.ietf.org/html/rfc8624).
 
 ***TG3*** *- select your key rollover schedule.*  
 Explanation: we will go into more detail for exact timing, but it is important to think beforehand about the approximate frequency at which you wish to change keys. For example: changing KSKs on an annual basis and changing ZSKs on a quarterly basis. The rough schedule is input for the design and implementation process.
 
 ***TG4*** *- select your preferred key ceremony days.*  
-Explanation: we strongly recommend that you try to pick a fixed day of the week on which to have your key ceremony. The rationale behind this is that it creates a predictable pattern for system administrators and any witnesses to your ceremony. Also, we recommend picking a day of the week that allows for additional working time left in the week to fix any issues or to reschedule the ceremony if required. We recommend always leaving one day between your ceremony and the weekend or any public holidays. In practice, in most countries this means scheduling the ceremony on Tuesdays, Wednesdays or Thursdays.
+Explanation: we strongly recommend that you try to pick a fixed day of the week on which to have your key ceremony. The rationale behind this is that it creates a predictable pattern for system administrators and any witnesses to your ceremony. Also, we recommend picking a day of the week that allows for additional working time left in the week to fix any issues or to reschedule the ceremony if required. We recommend always leaving one day between your ceremony and the weekend or any public holidays. In practice, in many countries this means scheduling the ceremony on Tuesdays, Wednesdays or Thursdays.
 
 ***TG5*** *- select your timing parameters.*  
-Explanation: we provide detailed calculations below, but it is important to think about timing beforehand. The most important parameter is signature validity and refresh intervals. Unless you have good reasons to do otherwise, we recommend making signatures valid for at least 14 days and to refresh them 5 days before they expire. The rationale behind this is what we call the "Easter holiday" scenario. In many countries, the Christian Easter Holiday includes Good Friday and Easter Monday, and is typically the longest uninterrupted holiday period composed solely of public holidays. In this scenario, if signatures are always refreshed 5 days before they expire, if there is some sort of failure by closing of business on Whit Thursday (the day before Good Friday), then there is no strict need for on-call engineers to intervene, and problems can be resolved on the Tuesday after Easter. Other timing parameters to consider include ```SOA``` parameters (see Design and Implementation below).
+Explanation: it is important to think about timing beforehand. The most important parameter is signature validity and refresh intervals. Unless you have good reasons to do otherwise, we recommend making signatures valid for at least 14 days and to refresh them 5 days before they expire. The rationale behind this is what we call the "Easter holiday" scenario. In many countries, the Christian Easter Holiday includes Good Friday and Easter Monday, and is typically the longest uninterrupted holiday period composed solely of public holidays. In this scenario, if signatures are always refreshed 5 days before they expire, if there is some sort of failure by closing of business on Whit Thursday (the day before Good Friday), then there is no strict need for on-call engineers to intervene, and problems can be resolved on the Tuesday after Easter. Other timing parameters to consider include ```SOA``` parameters (see Design and Implementation below). The IETF also provides guidance on timing parameters [[6]](https://tools.ietf.org/html/rfc7583)
 
 ***TG6*** *- divide your time schedule into fixed slots.*  
 Explanation: To ease planning your ceremonies, we strongly recommend using fixed time slots (e.g. calendar weeks, months, quarters, ...) as planning units. The Root DNS KSK operator, for example, uses a slot-based schedule.
@@ -120,10 +130,10 @@ Explanation: To ease planning your ceremonies, we strongly recommend using fixed
 Explanation: There may be a plethora of reasons why a scheduled key ceremony may have to be moved in time. Plan for this in advance by ensuring that your key ceremonies take place well before the newly generated materials are needed in production, and always allow for a grace period of several slots.
 
 ***TG8*** *- plan for ZSK key compromise.*  
-Explanation: While a compromise of an offline KSK is extremely unlikely, your ZSK will likely be online in operation, and as such vulnerable to potential compromise. Even though you should take adequate security measures to limit the likelihood of a ZSK compromise, we nevertheless also recommend that you plan for it happening anyway. To migitate the impact, we recommend keeping any material that "blesses" the ZSK separate from your operational system. In practice, this means keeping the set of signed ```DNSKEY``` RRsets for the current planning period on a separate system, and to only feed in new ```DNSKEY``` RRsets to your signer when needed. A compromise of the signer system will then not automatically result in a compromise for the whole operating period of that ZSK. In essence, what this means is that you should also treat the set of pre-signed ```DNSKEY``` RRsets as sensitive information. We realise that current signer implementations may not support this, so this is an optional recommendation and a call to all signer implementers that (intend to) support offline KSK scenarios to support this type of functionality.
+Explanation: While a compromise of an offline KSK is extremely unlikely, your ZSK will likely be online in operation, and as such may be more vulnerable to potential compromise. Even though you should take adequate security measures to limit the likelihood of a ZSK compromise, we nevertheless also recommend that you plan for it happening anyway. To migitate the impact, we recommend keeping any material that "blesses" the ZSK separate from your operational system. In practice, this means keeping the set of signed ```DNSKEY``` RRsets for the current planning period on a separate system, and to only feed in new ```DNSKEY``` RRsets to your signer when needed. A compromise of the signer system will then not automatically result in a compromise for the whole operating period of that ZSK. In essence, what this means is that you should also treat the set of pre-signed ```DNSKEY``` RRsets as sensitive information. We realise that current signer implementations may not support this, so this is an optional recommendation and a call to all signer implementers that (intend to) support offline KSK scenarios to support this type of functionality.
 
 ***TG9*** *- plan for an emergency ceremony.*  
-Explanation: While you would typically not deviate from your planned rollover and accompanying ceremony schedule, there may be reasons for an emergency ceremony. A ZSK compromise is one reason for such an emergency ceremony, but, e.g., the catastrophic failure of a signer system can also means new key material is needed urgently. We recommend that you plan for such an emergency ceremony, taking into consideration which actors need to be present, how the emergency materials can be taken into production and how such an emergency affects the regular ceremony and rollover schedule.
+Explanation: While you would typically not deviate from your planned rollover and accompanying ceremony schedule, there may be reasons for an emergency ceremony. A ZSK compromise is one reason for such an emergency ceremony, but, e.g., the catastrophic failure of a signer system can also mean new key material is needed urgently. We recommend that you plan for such an emergency ceremony, taking into consideration which actors need to be present, how the emergency materials can be taken into production and how such an emergency affects the regular ceremony and rollover schedule.
 
 #### ZSK Keyset Signing Ceremony
 
@@ -150,7 +160,7 @@ Explanation: there are different key rollover approaches for ZSKs (for an exhaus
 #### KSK Generation, Signing and Rollover Ceremony
 
 ***TK1*** *- choose a key rollover model.*  
-Explanation: there are different key rollover approaches for KSKs (for an exhaustive description see [[3]](https://tools.ietf.org/html/rfc6781#section-4.1.2). Unless there are specific reasons to choose a different model, we recommend using the *KSK double DS scheme*, in which the ```DNSKEY``` set is signed with only one KSK and two ```DS``` records are published in the parent zone during the rollover. The advantage of this approach is that it reduces the size of the ```DNSKEY``` RRset during the rollover. All of the examples in the DNSSEC Key Signing Suite documentation and all of the tools provided assume the *KSK double DS scheme* is used.
+Explanation: there are different key rollover approaches for KSKs (for an exhaustive description see [[3]](https://tools.ietf.org/html/rfc6781#section-4.1.2)). Unless there are specific reasons to choose a different model, we recommend using the *KSK double DS scheme*, in which the ```DNSKEY``` set is signed with only one KSK and two ```DS``` records are published in the parent zone during the rollover. The advantage of this approach is that it reduces the size of the ```DNSKEY``` RRset during the rollover. All of the examples in the DNSSEC Key Signing Suite documentation and all of the tools provided assume the *KSK double DS scheme* is used.
 
 ***TK2*** *- decide whether KSK and ZSK rollovers may overlap.*  
 Explanation: depending on what DNSSEC algorithm is used, allowing KSK and ZSK rollovers to overlap may lead to very large DNS responses to ```DNSKEY``` queries. This in turn may lead to response packet fragmentation, which is known to cause DNS resolution problems. The requirements on processes vary between environments, so it may not be possible to always separate rollovers, but if you do use RSA as signing algorithm, we recommend that you strongly consider not allowing KSK and ZSK rollovers to overlap.
@@ -166,3 +176,9 @@ Explanation: depending on what DNSSEC algorithm is used, allowing KSK and ZSK ro
 [2] Jaromir Talomir, "Offline KSK with Knot DNS 2.8", DNS-OARC 30, Bangkok, Thailand, [<https://indico.dns-oarc.net/event/31/contributions/689/attachments/670/1100/KNOT-offline.pdf>](https://indico.dns-oarc.net/event/31/contributions/689/attachments/670/1100/KNOT-offline.pdf)
 
 [3] Olaf Kolkman, Matthijs Mekking and Miek Gieben, "RFC 6781 - DNSSEC Operational Practices, Version 2", IETF, [<https://tools.ietf.org/html/rfc6781>](https://tools.ietf.org/html/rfc6781)
+
+[4] SoftHSM v2, [<https://github.com/opendnssec/SoftHSMv2>](https://github.com/opendnssec/SoftHSMv2)
+
+[5] Paul Wouters and Ondrej Sury, "RFC 8624 - Algorithm Implementation Requirements and Usage Guidance for DNSSEC", IETF, [<https://tools.ietf.org/html/rfc8624>](https://tools.ietf.org/html/rfc8624)
+
+[6] Stephen Morris, Johan Ihren, John Dickinson and Matthijs Mekking, "RFC 7583 - DNSSEC Key Rollover Timing Considerations", IETF, [<https://tools.ietf.org/html/rfc7583>](https://tools.ietf.org/html/rfc7583)
