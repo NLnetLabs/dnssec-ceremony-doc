@@ -167,7 +167,52 @@ Explanation: depending on what DNSSEC algorithm is used, allowing KSK and ZSK ro
 
 ## Key Ceremony Design and Implementation Building Blocks
 
+### General guidance
 
+When discussing the building blocks, the text will cleary indicate whether these:
+
+ * **[W]** apply only to witnessed ceremonies
+ * **[TW]** apply both to technical and witnessed ceremonies
+
+### Step 1 [W] - Scheduling a ceremony and inviting witnesses
+
+In case of witnessed ceremonies, the first step is to perform timely scheduling of a ceremony, and to invite witnesses to participate. Key elements to consider in this step are:
+
+ * Impose a deadline for witnesses to RSVP to the invitation to participate so you know well in advance how many witnesses will attend;
+ * Verify well in advance that you have a quorum of witnesses; (see also _WS4_)
+ * Send witnesses an agenda for the ceremony that details each of the steps you plan to execute;
+ * If your policy requires this, publicly announce your planned ceremony to your community.
+
+### Step 2 [TW] - Technical preparation
+
+In this step, all technical preparations for the ceremony will take place. The exact preparation depends on the technical choices you have made (such as where certain key material is generated, what rollover mechanism you use for ZSKs and KSKs, timing parameters). In general, however, it will likely involve some of the following elements:
+
+ * Generating new ZSKs;
+ * Preparing `DNSKEY` sets to be signed;
+ * Putting together a recipe for the key ceremony to be executed in the secure environment (see also [`RECIPE-API.md`](./RECIPE-API.md) for more details);
+ * Preparing your signer to receive newly signed keysets created in the secure environment.
+
+### Step 3 [W] - Authentication of witnesses
+
+For a witnessed ceremony, you may have a process for establishing the identity of witnesses. In addition to this, you may need to verify that the witnesses have everything they need in order for them to participate in the ceremony. In particular, you may need to check if, for example, they have the authentication tokens (smart cards or USB keys) to activate the Hardware Security Module, if you use such an authorisation model.
+
+### Step 4 [W] - Verification and witnessing of ceremony recipe
+
+In this part of a witnessed ceremony, witnesses will be shown the ceremony recipe that is to be executed. They should, for example, verify that the recipe matches the type of ceremony that was pre-announced (either ZSK or KSK ceremony), the number of new keys to be introduced, and, if keys are generated outside of the secure environment, should sign off on the exact keys that will be input for signing as part of the ceremony, such that this information can later be published as a public record.
+
+### Step 5 [TW] - Execute the ceremony recipe
+
+While the details of this step depend on the technical implementation, typically this step is largely automated, except for the situation where witnesses need to authenticate to the HSM to activate it. We envisage running an application that can execute a prepared recipe (that, e.g., follows the specification in [`RECIPE-API.md`](./RECIPE-API.md)).
+
+A technical operator needs to verify if the recipe has been executed successfully and without errors.
+
+### Step 6 [W] - Sign off on the output
+
+While the output of the ceremony may partly depend on design choices (such as where keys are generated), typically, the output consists of signed `DNSKEY` sets which are valid for a certain period of time. Witnesses should sign off on these keysets, such that the output of the ceremony, together with the witness statements can be published as a public record.
+
+### Step 7 [TW] - Import the output of the ceremony into the signer
+
+In the final step, the output of the ceremony should be imported into the signer, such that the newly generated `DNSKEY` sets can be used in upcoming changes.
 
 ## References
 
