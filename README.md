@@ -1,6 +1,6 @@
 # DNSSEC Key Signing Suite Documentation
 
-Copyright (c) 2019 NLnet Labs  
+Copyright (c) 2019-2020 NLnet Labs  
 Released under Creative Commons CC 4.0 BY-SA (see [`LICENSE`](LICENSE))
 
 ### Funding Acknowledgement
@@ -25,7 +25,5 @@ The scope of this project's documentation is limited to DNSSEC key ceremonies an
 
 This repository contains the following documents:
 
- - [`CEREMONY.md`](CEREMONY.md) - this document describes what to take into consideration when designing a ceremony and provides boiler plate approaches to the various stages. We recommend that you at least read the section on considerations before choosing an approach to your own key ceremony. You can then decide whether or not to use one of the example approaches (see below) or to create your own custom ceremony based on the building blocks provided in this document.
- - [`CEREMONY-SIMPLE.md`](CEREMONY-SIMPLE.md) - this document contains a working example of a key ceremony that can be used in environments where there is no immediate need for public scrutiny or witnessing of the ceremony. It only describes the technical steps to take when working with offline keys.
- - [`CEREMONY-PUBLIC.md`](CEREMONY-PUBLIC.md) - this document contains a working example of a key ceremony that includes public scrutiny or witnessing by community representatives. It describes how to involve the witnesses in the process as well as the technical implementation of the key ceremony.
+ - [`CEREMONY.md`](CEREMONY.md) - this document describes what to take into consideration when designing a ceremony and provides boiler plate approaches to the various stages. We recommend that you at least read the section on considerations before choosing an approach to your own key ceremony. 
  - [`RECIPE-API.md`](RECIPE-API.md) - this document contains an API description for the commands that are exchanged between a signer system and the protected environment in which the key ceremonies will take place (which we colloquially refer to as the "bunker").
