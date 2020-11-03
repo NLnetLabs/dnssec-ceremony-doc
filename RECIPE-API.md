@@ -1,7 +1,7 @@
 # DNSSEC Key Signing Suite Documentation
 ## Key Ceremony Recipe API specification
 
-Copyright (c) 2019 NLnet Labs  
+Copyright (c) 2019-2020 NLnet Labs  
 Released under Creative Commons CC 4.0 BY-SA (see [`LICENSE`](LICENSE))
 
 ### Funding Acknowledgement
