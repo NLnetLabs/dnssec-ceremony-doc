@@ -22,7 +22,7 @@ This document consists of two parts. The first part discusses collecting require
 
 ### Introduction
 
-Various operators of top-level domains and e.g. the DNS Root operator [[1]](https://www.iana.org/dnssec/dps/ksk-operator/ksk-dps.txt) have already deployed offline KSKs with accompanying ceremonies. In most cases, these ceremonies consist of a human process (often including public scrutiny by community members) and a technical process (in which the actual key operations take place).
+Various operators of top-level domains and e.g. the DNS Root operator [[1]](https://www.iana.org/dnssec/procedures/ksk-operator/ksk-dps-20201104.html) have already deployed offline KSKs with accompanying ceremonies. In most cases, these ceremonies consist of a human process (often including public scrutiny by community members) and a technical process (in which the actual key operations take place).
 
 While the human processes and technical processes typically depend on each other, the requirements for each process may differ from operator to operator. Additionally, we identify two high-level roles in the human process, that need to be clearly separated. The first role is that of a technical operator. People in this role operate equipment, run commands, optionally verify the technical soundness of the outcome of various steps and ensure timely execution of the process. The second role is that of a community or stakeholder witness. People in this role verify that the ceremony is carried out according to the pre-defined requirements and verify the output of various steps of the process.
 
