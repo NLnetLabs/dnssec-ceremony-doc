@@ -216,7 +216,7 @@ In the final step, the output of the ceremony should be imported into the signer
 
 ## References
 
-[1] IANA, "DNSSEC Practice Statement for the Root Zone KSK Operator", [<https://www.iana.org/dnssec/dps/ksk-operator/ksk-dps.txt>](https://www.iana.org/dnssec/dps/ksk-operator/ksk-dps.txt)
+[1] IANA, "DNSSEC Practice Statement for the Root Zone KSK Operator", [<https://www.iana.org/dnssec/procedures/ksk-operator/ksk-dps-20201104.html>](https://www.iana.org/dnssec/procedures/ksk-operator/ksk-dps-20201104.html)
 
 [2] Jaromir Talomir, "Offline KSK with Knot DNS 2.8", DNS-OARC 30, Bangkok, Thailand, [<https://indico.dns-oarc.net/event/31/contributions/689/attachments/670/1100/KNOT-offline.pdf>](https://indico.dns-oarc.net/event/31/contributions/689/attachments/670/1100/KNOT-offline.pdf)
 
